@@ -18,7 +18,13 @@ function ToastPlayground() {
     setIsOpened(false)
   }
 
-  React.useEffect(() => { console.log(textInput, toastVariant) }, [toastVariant, textInput])
+  function handlePopToast() {
+    setIsOpened(true)
+    setTimeout(()=>{
+      setTextInput("")
+      setToastVariant(initVarian)
+    }, 0)
+  }
 
   return (
     <div className={styles.wrapper}>
@@ -70,7 +76,7 @@ function ToastPlayground() {
           <div
             className={`${styles.inputWrapper} ${styles.radioWrapper}`}
           >
-            <Button onClick={() => setIsOpened(true)}>Pop Toast!</Button>
+            <Button onClick={handlePopToast}>Pop Toast!</Button>
           </div>
         </div>
       </div>

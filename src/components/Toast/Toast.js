@@ -19,14 +19,16 @@ const ICONS_BY_VARIANT = {
 };
 
 function Toast({ type = "notice", handleDismiss, children }) {
-  const IconTag = ICONS_BY_VARIANT[type]
+  const [text, setText] = React.useState(children);
+  const [typeState, setTypeState] = React.useState(type)
+  const IconTag = ICONS_BY_VARIANT[typeState]
   return (
-    <div className={`${styles.toast} ${styles[type]}`}>
+    <div className={`${styles.toast} ${styles[typeState]}`}>
       <div className={styles.iconContainer}>
         <IconTag size={24} />
       </div>
       <p className={styles.content}>
-        {children}
+        {text}
       </p>
       <button className={styles.closeButton} onClick={handleDismiss}>
         <X size={24} />
