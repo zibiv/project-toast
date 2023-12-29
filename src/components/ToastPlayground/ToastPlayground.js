@@ -5,6 +5,7 @@ import Button from '../Button';
 import styles from './ToastPlayground.module.css';
 import Toast from '../Toast';
 import useToggle from '../../hooks'
+import ToastShelf from '../ToastShelf/ToastShelf.js';
 
 const VARIANT_OPTIONS = ['notice', 'warning', 'success', 'error'];
 
@@ -12,18 +13,28 @@ function ToastPlayground() {
   const initVarian = "notice"
   const [textInput, setTextInput] = React.useState("");
   const [toastVariant, setToastVariant] = React.useState(initVarian);
-  const [isOpened, toggle, setIsOpened] = useToggle(false);
+  const [toasts, setToasts] = React.useState([]);
 
-  function handleCloseToast() {
-    setIsOpened(false)
+
+  function handleCloseToast(id) {
+    setToasts(prev => {
+      const updatedToasts = prev.filter(element => element.id !== id)
+      return updatedToasts
+    })
   }
 
-  function handlePopToast() {
-    setIsOpened(true)
-    setTimeout(()=>{
-      setTextInput("")
-      setToastVariant(initVarian)
-    }, 0)
+  const memoidedHandleCloseToast = React.useCallback(handleCloseToast, [toasts])
+
+  function handlePopToast(e) {
+    e.preventDefault()
+    const updatedToasts = [...toasts, {
+      textInput,
+      toastVariant,
+      id: crypto.randomUUID()
+    }]
+    setToasts(updatedToasts)
+    setTextInput("")
+    setToastVariant(initVarian)
   }
 
   return (
@@ -32,8 +43,8 @@ function ToastPlayground() {
         <img alt="Cute toast mascot" src="/toast.png" />
         <h1>Toast Playground</h1>
       </header>
-      {isOpened && <Toast type={toastVariant} handleDismiss={handleCloseToast}>{textInput}</Toast>}
-      <div className={styles.controlsWrapper}>
+      <ToastShelf toasts={toasts} handleCloseToast={memoidedHandleCloseToast} />
+      <form className={styles.controlsWrapper} onSubmit={(e) => handlePopToast(e)}>
         <div className={styles.row}>
           <label
             htmlFor="message"
@@ -43,7 +54,7 @@ function ToastPlayground() {
             Message
           </label>
           <div className={styles.inputWrapper}>
-            <textarea id="message" className={styles.messageInput} value={textInput} onChange={(e) => setTextInput(e.target.value)} />
+            <textarea id="message" className={styles.messageInput} value={textInput} onChange={(e) => setTextInput(e.target.value)} required />
           </div>
         </div>
 
@@ -76,10 +87,10 @@ function ToastPlayground() {
           <div
             className={`${styles.inputWrapper} ${styles.radioWrapper}`}
           >
-            <Button onClick={handlePopToast}>Pop Toast!</Button>
+            <Button type="submit">Pop Toast!</Button>
           </div>
         </div>
-      </div>
+      </form>
     </div>
   );
 }
