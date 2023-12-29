@@ -18,19 +18,21 @@ const ICONS_BY_VARIANT = {
   error: AlertOctagon,
 };
 
-function Toast({ type = "notice", handleDismiss, children }) {
-  const [text, setText] = React.useState(children);
-  const [typeState, setTypeState] = React.useState(type)
-  const IconTag = ICONS_BY_VARIANT[typeState]
+function Toast({ type = "notice", id, handleDismiss, children }) {
+  const IconTag = ICONS_BY_VARIANT[type]
+  React.useEffect(()=>{
+    const timerId = setTimeout(() => handleDismiss(id),10000)
+    return () => {clearTimeout(timerId)}
+  },[])
   return (
-    <div className={`${styles.toast} ${styles[typeState]}`}>
+    <div className={`${styles.toast} ${styles[type]}`}>
       <div className={styles.iconContainer}>
         <IconTag size={24} />
       </div>
       <p className={styles.content}>
-        {text}
+        {children}
       </p>
-      <button className={styles.closeButton} onClick={handleDismiss}>
+      <button className={styles.closeButton} onClick={() => handleDismiss(id)}>
         <X size={24} />
         <VisuallyHidden>Dismiss message</VisuallyHidden>
       </button>
